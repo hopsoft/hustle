@@ -6,6 +6,7 @@ require "drb"
 require "thread"
 require "singleton"
 require "forwardable"
+require "monitor"
 
 module Hustle
   class << self
@@ -15,10 +16,7 @@ module Hustle
 
   class Hustler
     include Singleton
-
-    def mutex
-      @mutex ||= Mutex.new
-    end
+    include MonitorMixin
 
     def cores
       @cores ||= OS.cpu_count
@@ -33,7 +31,7 @@ module Hustle
     end
 
     def stop_drb
-      mutex.synchronize do
+      synchronize do
         if active_runners.empty?
           DRb.stop_service
           @drb = nil
@@ -74,13 +72,13 @@ module Hustle
         value = runner.remote_value
         runner.stop_remote_instance
         stop_drb
-        mutex.synchronize do
+        synchronize do
           active_runners.delete(runner.pid)
         end
         callback.call value
       end
 
-      mutex.synchronize do
+      synchronize do
         active_runners[runner.pid] = runner
       end
     end
