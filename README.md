@@ -1,6 +1,6 @@
 # Hustle
 
-Experiment to run Ruby blocks in a separate process
+Experiment to execute Ruby blocks in separate processes.
 
 ## Examples
 
