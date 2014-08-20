@@ -46,6 +46,9 @@ module Hustle
       runner = Runner.new(uri)
       runner.start_remote_instance
       sleep 0 while !runner.remote_instance_ready?
+      synchronize do
+        active_runners[runner.pid] = runner
+      end
       runner.run_remote(&block)
       finish runner, callback
     end
@@ -76,10 +79,6 @@ module Hustle
           active_runners.delete(runner.pid)
         end
         callback.call value
-      end
-
-      synchronize do
-        active_runners[runner.pid] = runner
       end
     end
 

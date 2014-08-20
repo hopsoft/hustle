@@ -60,7 +60,11 @@ module Hustle
 
     def run
       Thread.new do
-        @value = yield
+        begin
+          @value = yield
+        rescue Exception => e
+          @value = e
+        end
         @finished = true
       end
     end

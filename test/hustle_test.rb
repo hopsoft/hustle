@@ -37,5 +37,18 @@ class HustleTest < MicroTest::Test
     end
   end
 
+  test "error in block" do
+    error_message = "Error in the block!"
+
+    asserts = -> (value) do
+      assert value.is_a?(StandardError)
+      assert value.message == error_message
+    end
+
+    Hustle.go(callback: asserts) do
+      raise error_message
+    end
+  end
+
 end
 
