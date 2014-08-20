@@ -2,7 +2,13 @@
 
 [![Code Climate](https://codeclimate.com/github/hopsoft/hustle/badges/gpa.svg)](https://codeclimate.com/github/hopsoft/hustle)
 
-Experiment to execute Ruby blocks in separate processes.
+#### NOTE: This is experimental.
+
+## Overview
+
+Ever wish Ruby was better at CPU bound concurrency?
+
+Hustle makes it easy by allowing you offload CPU intense blocks to separate processes.
 
 ## Examples
 
