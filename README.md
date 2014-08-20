@@ -2,11 +2,11 @@
 
 Experiment to run Ruby blocks in a separate process
 
-## Example
+## Examples
+
+### Fire & Forget
 
 ```ruby
-# fire & forget
-
 Hustle.go do
   # this block is executed in a separate process
   sleep 5 # heavy lifing...
@@ -16,9 +16,9 @@ end
 foo = :bar
 ```
 
-```ruby
-# get notified when work completes
+### Callbacks
 
+```ruby
 print_value = -> (value) do
   # this will run when the Hustle block completes
   puts value # => true
