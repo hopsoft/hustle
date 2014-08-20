@@ -2,13 +2,14 @@ require "sourcify"
 
 module Hustle
   class Runner
-    attr_reader :uri, :pid, :value
+    attr_reader :uri, :pid, :context
     attr_accessor :callback_thread
 
     # methods to be run on the local instance
 
-    def initialize(uri)
+    def initialize(uri, context: {})
       @uri = uri
+      @context = context
     end
 
     def remote_instance
@@ -41,7 +42,7 @@ module Hustle
       remote_instance.stop
     end
 
-    def run_remote(&block)
+    def run_remote(context: {}, &block)
       sleep 0 while !remote_instance_ready?
       source = block.to_source(strip_enclosure: true)
       remote_instance.run source
@@ -55,7 +56,7 @@ module Hustle
 
     def run(source)
       begin
-        eval source
+        eval source, binding
       rescue Exception => e
         e
       end

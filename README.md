@@ -55,6 +55,29 @@ end
 foo = :bar
 ```
 
+### Arguments, Context, & Lexical Scope
+
+__Important__: Scoping behaves differently because the block is run in a separate process.
+
+It's possible to pass a context (or scope) to the block.
+
+```ruby
+data = { message: "I'm from the parent process." }
+
+print_data = -> (value) do
+  puts data.inspect # => { message: "I'm from the parent process." }
+  puts value.inspect # => { message: "I'm from the child process." }
+end
+
+Hustle.go context: data, callback: print_data do
+  # this block is executed in a separate process
+  # the "data" variable will NOT be available
+  # the context variable is available
+  context[:message] = "I'm from the child process."
+  context
+end
+```
+
 ### Error Handling
 
 ```ruby

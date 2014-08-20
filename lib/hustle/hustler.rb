@@ -33,11 +33,11 @@ module Hustle
       end
     end
 
-    def go(callback: -> (val) {}, &block)
+    def go(context: {}, callback: -> (val) {}, &block)
       start_drb
       sleep 0 while active_runners.size >= cores.size
       uri = "druby://127.0.0.1:#{random_port}"
-      runner = Runner.new(uri)
+      runner = Runner.new(uri, context: context)
       runner.start_remote_instance
       synchronize do
         active_runners[runner.pid] = runner

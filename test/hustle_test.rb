@@ -54,5 +54,23 @@ class HustleTest < MicroTest::Test
     Hustle.wait
   end
 
+  test "context passing" do
+    data = { a: 0, b: 1 }
+
+    asserts = -> (value) do
+      assert value.is_a?(Hash)
+      assert value[:a] == 0
+      assert value[:b] == 3
+      assert data.object_id != value.object_id
+    end
+
+    Hustle.go context: data, callback: asserts do
+      context[:b] = 3
+      context
+    end
+
+    Hustle.wait
+  end
+
 end
 
