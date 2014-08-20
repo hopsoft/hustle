@@ -13,24 +13,23 @@ class HustleTest < MicroTest::Test
     Hustle.wait
   end
 
-  test "mutate state in primary process" do
-    data = { foo: nil, bar: nil }
+  ##test "mutate state in primary process" do
+  ##  data = { foo: nil, bar: nil }
 
-    asserts = -> (value) do
-      assert data[:foo] == 1
-      assert data[:bar] == 2
-    end
+  ##  asserts = -> (value) do
+  ##    assert data[:foo] == 1
+  ##    assert data[:bar] == 2
+  ##  end
 
-    Hustle.go callback: asserts do
-      data[:foo] = 1
-      data[:bar] = 2
-    end
-    Hustle.wait
-  end
+  ##  Hustle.go callback: asserts do
+  ##    data[:foo] = 1
+  ##    data[:bar] = 2
+  ##  end
+  ##  Hustle.wait
+  ##end
 
   test "callback value" do
     asserts = -> (value) do
-      puts "#{Process.pid} != #{value}"
       assert Process.pid != value
     end
 
@@ -42,15 +41,12 @@ class HustleTest < MicroTest::Test
   end
 
   test "error in block" do
-    error_message = "Error in the block!"
-
     asserts = -> (value) do
-      assert value.is_a?(StandardError)
-      assert value.message == error_message
+      assert value.is_a?(ZeroDivisionError)
     end
 
     Hustle.go(callback: asserts) do
-      raise error_message
+      1/0
     end
 
     Hustle.wait
@@ -58,8 +54,7 @@ class HustleTest < MicroTest::Test
 
   test "cpu intense work" do
     asserts = -> (value) do
-      puts value.inspect
-      assert value == []
+      assert value == [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229, 832040, 1346269, 2178309, 3524578, 5702887, 9227465, 14930352, 24157817]
     end
 
     Hustle.go callback: asserts do

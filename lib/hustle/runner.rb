@@ -1,3 +1,5 @@
+require "sourcify"
+
 module Hustle
   class Runner
     attr_reader :uri, :pid, :value
@@ -41,7 +43,8 @@ module Hustle
 
     def run_remote(&block)
       sleep 0 while !remote_instance_ready?
-      remote_instance.run(&block)
+      source = block.to_source(strip_enclosure: true)
+      remote_instance.run source#, binding
     end
 
     # methods to be run on the remote instance
@@ -50,9 +53,9 @@ module Hustle
       DRb.stop_service
     end
 
-    def run
+    def run(source)#, parent_binding)
       begin
-        yield
+        eval source#, parent_binding
       rescue Exception => e
         e
       end
