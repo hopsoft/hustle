@@ -41,15 +41,8 @@ module Hustle
     end
 
     def run_remote(&block)
+      sleep 0 while !remote_instance_ready?
       remote_instance.run(&block)
-    end
-
-    def remote_instance_finished?
-      remote_instance.finished?
-    end
-
-    def remote_value
-      remote_instance.value
     end
 
     # methods to be run on the remote instance
@@ -59,18 +52,11 @@ module Hustle
     end
 
     def run
-      Thread.new do
-        begin
-          @value = yield
-        rescue Exception => e
-          @value = e
-        end
-        @finished = true
+      begin
+        yield
+      rescue Exception => e
+        e
       end
-    end
-
-    def finished?
-      !!@finished
     end
 
   end

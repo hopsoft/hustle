@@ -27,7 +27,10 @@ module Hustle
     end
 
     def start_drb
-      @drb ||= DRb.start_service
+      @drb ||= begin
+        DRb.start_service
+        sleep 0 while server.is_a?(DRb::DRbServerNotFound)
+      end
     end
 
     def stop_drb
@@ -45,12 +48,10 @@ module Hustle
       uri = "druby://127.0.0.1:#{random_port}"
       runner = Runner.new(uri)
       runner.start_remote_instance
-      sleep 0 while !runner.remote_instance_ready?
       synchronize do
         active_runners[runner.pid] = runner
       end
-      runner.run_remote(&block)
-      finish runner, callback
+      finish runner, callback, &block
     end
 
     def wait
@@ -69,16 +70,23 @@ module Hustle
      port
     end
 
-    def finish(runner, callback)
+    def finish(runner, callback, &block)
       runner.callback_thread = Thread.new do
-        sleep 0.01 while !runner.remote_instance_finished?
-        value = runner.remote_value
+        value = runner.run_remote(&block)
         runner.stop_remote_instance
-        stop_drb
         synchronize do
           active_runners.delete(runner.pid)
         end
+        stop_drb
         callback.call value
+      end
+    end
+
+    def server
+      begin
+        DRb.current_server
+      rescue DRb::DRbServerNotFound => e
+        e
       end
     end
 
