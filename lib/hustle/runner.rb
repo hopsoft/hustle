@@ -1,5 +1,4 @@
 module Hustle
-
   class Runner
     attr_reader :uri, :pid, :value
     attr_accessor :callback_thread
@@ -60,5 +59,4 @@ module Hustle
     end
 
   end
-
 end
