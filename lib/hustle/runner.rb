@@ -1,7 +1,8 @@
 module Hustle
 
   class Runner
-    attr_reader :uri, :pid
+    attr_reader :uri, :pid, :value
+    attr_accessor :callback_thread
 
     # methods to be run on the local instance
 
@@ -43,15 +44,31 @@ module Hustle
       remote_instance.run(&block)
     end
 
+    def remote_instance_finished?
+      remote_instance.finished?
+    end
+
+    def remote_value
+      remote_instance.value
+    end
+
     # methods to be run on the remote instance
 
     def stop
       DRb.stop_service
     end
 
-    def run(&block)
-      yield
+    def run
+      Thread.new do
+        @value = yield
+        @finished = true
+      end
     end
+
+    def finished?
+      !!@finished
+    end
+
   end
 
 end

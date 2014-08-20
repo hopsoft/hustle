@@ -5,9 +5,31 @@ Experiment to run Ruby blocks in a separate process
 ## Example
 
 ```ruby
-while true
-  r = Hustle.hustle { rand(9999) } # the block runs in a separate process
-  puts r
-  sleep 0.001
+# fire & forget
+
+Hustle.go do
+  # this block is executed in a separate process
+  sleep 5 # heavy lifing...
 end
+
+# this will run immediately
+foo = :bar
+```
+
+```ruby
+# get notified when work completes
+
+print_value = -> (value) do
+  # this will run when the Hustle block completes
+  puts value # => true
+end
+
+Hustle.go(callback: print_value) do
+  # this block is executed in a separate process
+  sleep 5 # heavy lifing...
+  true # this is the return value
+end
+
+# this will run immediately
+foo = :bar
 ```

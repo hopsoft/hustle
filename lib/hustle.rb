@@ -3,17 +3,29 @@ require_relative "hustle/runner"
 require "os"
 require "socket"
 require "drb"
+require "thread"
+require "singleton"
+require "forwardable"
 
 module Hustle
-
   class << self
+    extend Forwardable
+    def_delegators :"Hustle::Hustler.instance", :go
+  end
+
+  class Hustler
+    include Singleton
+
+    def mutex
+      @mutex ||= Mutex.new
+    end
 
     def cores
       @cores ||= OS.cpu_count
     end
 
-    def runners
-      @runners ||= {}
+    def active_runners
+      @active_runners ||= {}
     end
 
     def start_drb
@@ -21,25 +33,29 @@ module Hustle
     end
 
     def stop_drb
-      if runners.empty?
-        DRb.stop_service
-        @drb = nil
+      mutex.synchronize do
+        if active_runners.empty?
+          DRb.stop_service
+          @drb = nil
+        end
       end
     end
 
-    def hustle(&block)
+    def go(callback: -> (val) {}, &block)
       start_drb
-      sleep 0 while runners.size >= cores.size
+      wait while active_runners.size >= cores.size
       uri = "druby://127.0.0.1:#{random_port}"
       runner = Runner.new(uri)
-      runners[uri] = runner
       runner.start_remote_instance
-      sleep 0 while !runner.remote_instance_ready?
-      value = runner.run_remote(&block)
-      runner.stop_remote_instance
-      runners.delete uri
-      stop_drb
-      value
+      wait while !runner.remote_instance_ready?
+      runner.run_remote(&block)
+      finish runner, callback
+    end
+
+    def join
+      active_runners.each do |_, runner|
+        runner.callback_thread.join
+      end
     end
 
     private
@@ -51,6 +67,33 @@ module Hustle
      socket.close
      port
     end
+
+    def finish(runner, callback)
+      runner.callback_thread = Thread.new do
+        wait while !runner.remote_instance_finished?
+        value = runner.remote_value
+        runner.stop_remote_instance
+        stop_drb
+        mutex.synchronize do
+          active_runners.delete(runner.pid)
+        end
+        callback.call value
+      end
+
+      mutex.synchronize do
+        active_runners[runner.pid] = runner
+      end
+    end
+
+    def wait
+      sleep 0.0001
+    end
+
   end
 
+end
+
+Signal.trap(0) do
+  Hustle::Hustler.instance.join
+  DRb.stop_service
 end
