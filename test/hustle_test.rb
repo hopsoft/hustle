@@ -27,5 +27,15 @@ class HustleTest < MicroTest::Test
     end
   end
 
+  test "callback value" do
+    asserts = -> (value) do
+      assert Process.pid != value
+    end
+
+    Hustle.go(callback: asserts) do
+      Process.pid
+    end
+  end
+
 end
 

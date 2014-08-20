@@ -21,13 +21,13 @@ foo = :bar
 ```ruby
 print_value = -> (value) do
   # this will run when the Hustle block completes
-  puts value # => true
+  puts "<#{Process.pid}> #{value}" # => <99693> Hello from: <99728>
 end
 
 Hustle.go(callback: print_value) do
   # this block is executed in a separate process
   sleep 5 # heavy lifing...
-  true # this is the return value
+  "Hello from: <#{Process.pid}>" # this is the return value
 end
 
 # this will run immediately
