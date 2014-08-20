@@ -1,5 +1,7 @@
 # Hustle
 
+[![Code Climate](https://codeclimate.com/github/hopsoft/hustle/badges/gpa.svg)](https://codeclimate.com/github/hopsoft/hustle)
+
 Experiment to execute Ruby blocks in separate processes.
 
 ## Examples
