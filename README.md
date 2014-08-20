@@ -16,6 +16,19 @@ end
 foo = :bar
 ```
 
+### Wait for All Blocks to Finish
+
+```ruby
+8.times do
+  Hustle.go do
+    # each invocation of this block is executed in a separate process
+    sleep 5 # heavy lifing...
+  end
+end
+
+Hustle.wait
+```
+
 ### Callbacks
 
 ```ruby
