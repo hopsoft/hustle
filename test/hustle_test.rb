@@ -5,12 +5,12 @@ require_relative "../lib/hustle"
 class HustleTest < MicroTest::Test
 
   test "multiple processes spawned" do
-    3.times do
+    4.times do
       Hustle.go { sleep 0.1 }
     end
 
-    assert Hustle::Hustler.instance.active_runners.size == 3
-    Hustle::Hustler.instance.join
+    assert Hustle::Hustler.instance.active_runners.size == 4
+    Hustle.wait
   end
 
   test "mutate state in primary process" do

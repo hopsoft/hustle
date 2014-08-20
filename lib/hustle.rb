@@ -11,7 +11,7 @@ require "monitor"
 module Hustle
   class << self
     extend Forwardable
-    def_delegators :"Hustle::Hustler.instance", :go
+    def_delegators :"Hustle::Hustler.instance", :go, :wait
   end
 
   class Hustler
@@ -41,16 +41,16 @@ module Hustle
 
     def go(callback: -> (val) {}, &block)
       start_drb
-      wait while active_runners.size >= cores.size
+      sleep 0 while active_runners.size >= cores.size
       uri = "druby://127.0.0.1:#{random_port}"
       runner = Runner.new(uri)
       runner.start_remote_instance
-      wait while !runner.remote_instance_ready?
+      sleep 0 while !runner.remote_instance_ready?
       runner.run_remote(&block)
       finish runner, callback
     end
 
-    def join
+    def wait
       active_runners.each do |_, runner|
         runner.callback_thread.join
       end
@@ -68,7 +68,7 @@ module Hustle
 
     def finish(runner, callback)
       runner.callback_thread = Thread.new do
-        wait while !runner.remote_instance_finished?
+        sleep 0.01 while !runner.remote_instance_finished?
         value = runner.remote_value
         runner.stop_remote_instance
         stop_drb
@@ -83,15 +83,11 @@ module Hustle
       end
     end
 
-    def wait
-      sleep 0.0001
-    end
-
   end
 
 end
 
 Signal.trap(0) do
-  Hustle::Hustler.instance.join
+  Hustle.wait
   DRb.stop_service
 end
