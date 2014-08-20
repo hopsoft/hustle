@@ -44,7 +44,7 @@ module Hustle
     def run_remote(&block)
       sleep 0 while !remote_instance_ready?
       source = block.to_source(strip_enclosure: true)
-      remote_instance.run source#, binding
+      remote_instance.run source
     end
 
     # methods to be run on the remote instance
@@ -53,9 +53,9 @@ module Hustle
       DRb.stop_service
     end
 
-    def run(source)#, parent_binding)
+    def run(source)
       begin
-        eval source#, parent_binding
+        eval source
       rescue Exception => e
         e
       end

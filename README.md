@@ -2,7 +2,7 @@
 
 [![Code Climate](https://codeclimate.com/github/hopsoft/hustle/badges/gpa.svg)](https://codeclimate.com/github/hopsoft/hustle)
 
-#### NOTE: This is experimental.
+#### NOTE: This is experimental. Use at your own risk.
 
 ## Overview
 

@@ -13,21 +13,6 @@ class HustleTest < MicroTest::Test
     Hustle.wait
   end
 
-  ##test "mutate state in primary process" do
-  ##  data = { foo: nil, bar: nil }
-
-  ##  asserts = -> (value) do
-  ##    assert data[:foo] == 1
-  ##    assert data[:bar] == 2
-  ##  end
-
-  ##  Hustle.go callback: asserts do
-  ##    data[:foo] = 1
-  ##    data[:bar] = 2
-  ##  end
-  ##  Hustle.wait
-  ##end
-
   test "callback value" do
     asserts = -> (value) do
       assert Process.pid != value
