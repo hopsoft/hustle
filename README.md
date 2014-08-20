@@ -46,3 +46,17 @@ end
 # this will run immediately
 foo = :bar
 ```
+
+### Error Handling
+
+```ruby
+callback = -> (value) do
+  value.is_a? StandardError # => true
+  value.message # => Error in block!
+end
+
+Hustle.go(callback: callback) do
+  # this block is executed in a separate process
+  raise "Error in block!"
+end
+```
