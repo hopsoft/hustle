@@ -6,7 +6,7 @@ class HustleTest < MicroTest::Test
 
   test "multiple processes spawned" do
     4.times do
-      Hustle.go { sleep 0.1 }
+      Hustle.go { sleep 1 }
     end
 
     assert Hustle::Hustler.instance.active_runners.size == 4
@@ -21,8 +21,6 @@ class HustleTest < MicroTest::Test
     Hustle.go(callback: asserts) do
       Process.pid
     end
-
-    Hustle.wait
   end
 
   test "error in block" do
@@ -33,8 +31,6 @@ class HustleTest < MicroTest::Test
     Hustle.go(callback: asserts) do
       1/0
     end
-
-    Hustle.wait
   end
 
   test "cpu intense work" do
@@ -50,8 +46,6 @@ class HustleTest < MicroTest::Test
       end
       38.times.map { |i| Fibinocci.new.calc(i) }
     end
-
-    Hustle.wait
   end
 
   test "context passing" do
@@ -68,7 +62,22 @@ class HustleTest < MicroTest::Test
       context[:b] = 3
       context
     end
+  end
 
+  test "execution order" do
+    x = 1
+    asserts = -> (value) do
+      assert x == 1
+      x = value
+      assert x == 2
+    end
+
+    Hustle.go callback: asserts do
+      sleep 0.1
+      2
+    end
+
+    assert x == 1
     Hustle.wait
   end
 
