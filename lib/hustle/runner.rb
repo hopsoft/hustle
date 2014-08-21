@@ -1,4 +1,4 @@
-require "sourcify"
+require "method_source"
 
 module Hustle
   class Runner
@@ -44,8 +44,15 @@ module Hustle
 
     def run_remote(context: {}, &block)
       sleep 0 while !remote_instance_ready?
-      source = block.to_source(strip_enclosure: true)
-      remote_instance.run source
+      code_string = proc_to_string(block)
+      remote_instance.run code_string
+    end
+
+    def proc_to_string(proc)
+      code = proc.source
+      start = code.index(/(?<=\{| do)/)
+      finish = code.rindex(/\}|end/) - 1
+      code[start..finish].strip
     end
 
     # methods to be run on the remote instance
@@ -54,9 +61,9 @@ module Hustle
       DRb.stop_service
     end
 
-    def run(source)
+    def run(code_string)
       begin
-        eval source, binding
+        eval code_string, binding
       rescue Exception => e
         e
       end

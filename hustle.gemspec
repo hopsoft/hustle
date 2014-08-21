@@ -18,8 +18,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_dependency "os", "~> 0.9.6"
-  gem.add_dependency "ParseTree", "~> 3.0.8"
-  gem.add_dependency "sourcify", "~> 0.5.0"
+  gem.add_dependency "method_source", "~> 0.8.2"
 
   gem.add_development_dependency "bundler", "~> 1.5"
   gem.add_development_dependency "rake"

@@ -57,22 +57,26 @@ foo = :bar
 
 ### Arguments, Context, & Lexical Scope
 
-__Important__: Scoping behaves differently because the block is run in a separate process.
+__Important__:
+Traditional lexical scoping of Ruby blocks does not work as you might expect.
+This is because the block gets executed in a separate process.
 
-It's possible to pass a context (or scope) to the block.
+Hustle allows you to pass a context object.
+You can use this feature to make data available within the block.
 
 ```ruby
 data = { message: "I'm from the parent process." }
 
 print_data = -> (value) do
-  puts data.inspect # => { message: "I'm from the parent process." }
-  puts value.inspect # => { message: "I'm from the child process." }
+  puts data.inspect # => {:message=>"I'm from the parent process."}
+  puts value.inspect # => {:message=>"I'm from the child process."}
 end
 
 Hustle.go context: data, callback: print_data do
   # this block is executed in a separate process
   # the "data" variable will NOT be available
-  # the context variable is available
+  # the "context" variable is available
+  # you can think of "context" as a copy of "data" in this case
   context[:message] = "I'm from the child process."
   context
 end
