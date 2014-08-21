@@ -42,7 +42,7 @@ module Hustle
       remote_instance.stop
     end
 
-    def run_remote(context: {}, &block)
+    def run_remote(&block)
       sleep 0 while !remote_instance_ready?
       code_string = proc_to_string(block)
       remote_instance.run code_string
