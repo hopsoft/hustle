@@ -41,7 +41,7 @@ Hustle.wait
 
 ```ruby
 print_value = -> (value) do
-  # this will run when the Hustle block completes
+  # this will run when the Hustle.go block completes
   puts "<#{Process.pid}> #{value}" # => <99693> Hello from: <99728>
 end
 
@@ -62,7 +62,7 @@ Traditional lexical scoping of Ruby blocks does not work as you might expect.
 This is because the block gets executed in a separate process.
 
 Hustle allows you to pass a context object.
-You can use this feature to make data available within the block.
+This feature allows you to make lexically scoped data available within the `Hustle.go` block.
 
 ```ruby
 data = { message: "I'm from the parent process." }
