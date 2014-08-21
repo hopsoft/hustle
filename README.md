@@ -6,7 +6,7 @@
 
 ## Overview
 
-Ever wish Ruby was better at CPU bound concurrency?
+Ever wish MRI was better at CPU bound concurrency?
 
 Hustle makes it easy by allowing you offload CPU intense blocks to separate processes.
 
