@@ -63,8 +63,8 @@ This is because the block gets executed in a separate process.
 
 Think of the `Hustle.go` block as a "true" lambda i.e. an anonymous function, not a closure.
 
-Hustle allows you to pass a context object.
-This feature allows you to make lexically scoped data available within the `Hustle.go` block.
+Hustle supports passing a context object to `Hustle.go`.
+Think of this as passing a variable (by value) to the lambda.
 
 ```ruby
 data = { message: "I'm from the parent process." }
