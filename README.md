@@ -61,7 +61,8 @@ __Important__:
 Traditional lexical scoping of Ruby blocks does not work as you might expect.
 This is because the block gets executed in a separate process.
 
-Think of the `Hustle.go` block as a "true" lambda i.e. an anonymous function, not a closure.
+Think of the `Hustle.go` block as a "true" lambda
+i.e. an anonymous function without the closure (an isolated scope)
 
 Hustle supports passing a context object to `Hustle.go`.
 Think of this as passing a variable (by value) to the lambda.
