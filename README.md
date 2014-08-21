@@ -55,7 +55,7 @@ end
 foo = :bar
 ```
 
-### Arguments, Context, & Lexical Scope
+### Lexical Scope & Context
 
 __Important__:
 Traditional lexical scoping of Ruby blocks does not work as you might expect.
